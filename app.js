@@ -231,12 +231,14 @@ class Card {
     return this.due === 0;
   }
   pass() {
-    this.interval = Math.round(this.interval * this.ease_factor * this.settings.interval_modifier);
-    this.interval = Math.max(1, this.interval); // interval can't be lower than 1
+    this.new_interval = Math.floor(this.interval * this.ease_factor * this.settings.interval_modifier);
+    // a pass should always increase interval by at least 1
+    // see https://github.com/ankitects/anki/blob/215413ce25e6cfde07de2b59f1e20f40330ca4ab/pylib/anki/sched.py#L618
+    this.interval = Math.max(this.interval + 1, this.new_interval);
     this.due = this.interval;
   }
   fail() {
-    this.interval = Math.round(this.interval * this.settings.failure_penalty);
+    this.interval = Math.floor(this.interval * this.settings.failure_penalty);
     this.interval = Math.max(1, this.interval); // interval can't be lower than 1
     this.due = this.interval;
     if (this.settings.use_anki_fail_factor) {
